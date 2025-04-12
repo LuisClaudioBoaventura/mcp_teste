@@ -1,12 +1,10 @@
 .sidebar {
-    transition: all 0.3s ease;
+    transition: width 0.3s ease;
 }
 .sidebar.collapsed {
-    width: 70px;
+    width: 80px;
 }
-.sidebar.collapsed .menu-text {
-    display: none;
-}
+.sidebar.collapsed .menu-text,
 .sidebar.collapsed .logo-text {
     display: none;
 }
@@ -25,7 +23,7 @@
 .toggle-switch {
     position: relative;
     display: inline-block;
-    width: 50px;
+    width: 48px;
     height: 24px;
 }
 .toggle-switch input {
@@ -47,10 +45,10 @@
 .slider:before {
     position: absolute;
     content: "";
-    height: 16px;
-    width: 16px;
-    left: 4px;
-    bottom: 4px;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
     background-color: white;
     transition: .4s;
     border-radius: 50%;
@@ -59,5 +57,27 @@ input:checked + .slider {
     background-color: #9333ea;
 }
 input:checked + .slider:before {
-    transform: translateX(26px);
+    transform: translateX(24px);
+}
+/* Dark mode overrides */
+.dark .toggle-switch input:checked + .slider {
+    background-color: #ab4dff;
+}
+.dark .slider {
+    background-color: #4b5563;
+}
+/* Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 80px;
+    }
+    
+    .menu-text,
+    .logo-text {
+        display: none;
+    }
+    
+    .content {
+        margin-left: 80px;
+    }
 } 
