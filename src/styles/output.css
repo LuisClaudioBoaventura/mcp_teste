@@ -147,11 +147,9 @@ html,
 :host {
   line-height: 1.5;
   /* 1 */
-  text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;    /* For IE */
   -webkit-text-size-adjust: 100%; /* For Safari */
-  -webkit-text-size-adjust: 100%; /* For Safari */
-  -ms-text-size-adjust: 100%;    /* For IE */
+  text-size-adjust: 100%;       /* For modern browsers */
   /* 2 */
   -moz-tab-size: 4;
   /* 3 */

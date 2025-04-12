@@ -48,6 +48,20 @@ function initBoard() {
     loadTasksFromStorage();
 }
 
+// Ajustar a altura máxima das colunas dinamicamente
+function adjustColumnHeight() {
+    const columns = [todoTasks, progressTasks, doneTasks];
+    columns.forEach(column => {
+        if (column.children.length > 5) {
+            column.style.maxHeight = '400px'; // Limita a altura para 5 cards
+            column.style.overflowY = 'auto'; // Ativa a barra de rolagem interna
+        } else {
+            column.style.maxHeight = '';
+            column.style.overflowY = '';
+        }
+    });
+}
+
 // Render all tasks
 function renderTasks() {
     // Clear all columns
@@ -71,6 +85,7 @@ function renderTasks() {
                 break;
         }
     });
+    adjustColumnHeight(); // Ajustar a altura das colunas após renderizar
 }
 
 // Create a task card element
@@ -131,6 +146,9 @@ function getPriorityClass(priority) {
 function openTaskDetail(taskId) {
     const task = tasks.find(t => t.id === taskId);
     if (!task) return;
+
+    // Definir o ID da tarefa atual
+    currentTaskId = taskId;
 
     // Preencher os detalhes da tarefa no modal
     document.getElementById('detailTitle').textContent = task.title;
@@ -276,21 +294,24 @@ function moveTaskToStatus(status) {
 }
 
 // Delete task
-document.getElementById('deleteTaskBtn').addEventListener('click', () => {
-    if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
-        tasks = tasks.filter(t => t.id != currentTaskId);
-        saveTasksToStorage(); // Salva após deletar a tarefa
-        renderTasks();
-        updateCounts();
-        closeModals();
-    }
-});
+const deleteTaskBtn = document.getElementById('deleteTaskBtn');
+
+if (deleteTaskBtn) {
+    deleteTaskBtn.addEventListener('click', () => {
+        if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
+            tasks = tasks.filter(t => t.id !== currentTaskId);
+            saveTasksToStorage(); // Salva após deletar a tarefa
+            renderTasks();
+            updateCounts();
+            closeModals();
+        }
+    });
+}
 
 // Adicionando eventos para os botões do modal de detalhes da tarefa
 const moveToTodoBtn = document.getElementById('moveToTodoBtn');
 const moveToProgressBtn = document.getElementById('moveToProgressBtn');
 const moveToDoneBtn = document.getElementById('moveToDoneBtn');
-const deleteTaskBtn = document.getElementById('deleteTaskBtn');
 
 moveToTodoBtn.addEventListener('click', () => {
     console.log('Botão "A Fazer" clicado');
@@ -305,17 +326,6 @@ moveToProgressBtn.addEventListener('click', () => {
 moveToDoneBtn.addEventListener('click', () => {
     console.log('Botão "Concluir" clicado');
     moveTaskToStatus('done');
-});
-
-deleteTaskBtn.addEventListener('click', () => {
-    console.log('Botão "Excluir" clicado');
-    if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
-        tasks = tasks.filter(t => t.id != currentTaskId);
-        saveTasksToStorage(); // Salva após deletar a tarefa
-        renderTasks();
-        updateCounts();
-        closeModals();
-    }
 });
 
 // Atualizando a lógica para iniciar o timer e mover o card para "Em Progresso"
