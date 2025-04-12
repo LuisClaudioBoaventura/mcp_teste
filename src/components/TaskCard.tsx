@@ -108,8 +108,10 @@ export default function TaskCard({ task, onClick }: TaskCardProps) {
                 className="ml-2 hover:text-lilac-600 dark:hover:text-lilac-400"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-              ></motion.button>
-                <i className={`fas fa-${isRunning ? 'pause' : 'play'}`}></i>
+              >
+                <>
+                  <i className={`fas fa-${isRunning ? 'pause' : 'play'}`}></i>
+                </>
               </motion.button>
             )}
           </div>
