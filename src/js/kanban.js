@@ -25,48 +25,27 @@ let currentTaskId = null;
 let timerRunning = false;
 let remainingTime = 0;
 
-// Sample tasks (would normally come from a database)
-let tasks = [
-    {
-        id: 1,
-        title: "Projeto Kanban",
-        description: "Criar um sistema de gerenciamento de tarefas estilo Kanban",
-        priority: "high",
-        status: "todo",
-        timer: {
-            enabled: true,
-            hours: 0,
-            minutes: 30,
-            seconds: 0,
-            remaining: 1800 // 30 minutes in seconds
-        }
-    },
-    {
-        id: 2,
-        title: "Reunião de equipe",
-        description: "Discutir progresso do projeto atual",
-        priority: "medium",
-        status: "progress",
-        timer: {
-            enabled: false
-        }
-    },
-    {
-        id: 3,
-        title: "Documentação",
-        description: "Escrever documentação do sistema",
-        priority: "low",
-        status: "done",
-        timer: {
-            enabled: false
-        }
+// Initialize tasks array
+let tasks = [];
+
+// Load tasks from localStorage
+function loadTasksFromStorage() {
+    const savedTasks = localStorage.getItem('kanbanTasks');
+    if (savedTasks) {
+        tasks = JSON.parse(savedTasks);
     }
-];
+    renderTasks();
+    updateCounts();
+}
+
+// Save tasks to localStorage
+function saveTasksToStorage() {
+    localStorage.setItem('kanbanTasks', JSON.stringify(tasks));
+}
 
 // Initialize the board
 function initBoard() {
-    renderTasks();
-    updateCounts();
+    loadTasksFromStorage();
 }
 
 // Render all tasks
@@ -209,9 +188,33 @@ taskForm.addEventListener('submit', (e) => {
     }
     
     tasks.push(newTask);
+    saveTasksToStorage(); // Salva após adicionar nova tarefa
     renderTasks();
     updateCounts();
     closeModals();
+});
+
+// Task movement buttons
+function moveTaskToStatus(status) {
+    const taskIndex = tasks.findIndex(t => t.id == currentTaskId);
+    if (taskIndex !== -1) {
+        tasks[taskIndex].status = status;
+        saveTasksToStorage(); // Salva após mover a tarefa
+        renderTasks();
+        updateCounts();
+        closeModals();
+    }
+}
+
+// Delete task
+document.getElementById('deleteTaskBtn').addEventListener('click', () => {
+    if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
+        tasks = tasks.filter(t => t.id != currentTaskId);
+        saveTasksToStorage(); // Salva após deletar a tarefa
+        renderTasks();
+        updateCounts();
+        closeModals();
+    }
 });
 
 // Initialize the board
