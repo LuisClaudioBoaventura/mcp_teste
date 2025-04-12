@@ -43,4 +43,25 @@ body {
     0% { transform: translateY(0px); }
     50% { transform: translateY(-15px); }
     100% { transform: translateY(0px); }
-} 
+}
+
+.task-column {
+    max-height: 400px; /* Limita a altura para aproximadamente 5 cards */
+    overflow-y: auto; /* Ativa a barra de rolagem interna */
+    padding-right: 8px; /* Adiciona espaço para a barra de rolagem */
+    /* Removed 'scrollbar-width' for better cross-browser compatibility */
+}
+
+/* Estilização adicional para barras de rolagem no Chrome, Edge e Safari */
+.task-column::-webkit-scrollbar {
+    width: 8px;
+}
+
+.task-column::-webkit-scrollbar-thumb {
+    background-color: #a0aec0; /* Cor do thumb da barra de rolagem */
+    border-radius: 4px;
+}
+
+.task-column::-webkit-scrollbar-thumb:hover {
+    background-color: #718096; /* Cor ao passar o mouse */
+}

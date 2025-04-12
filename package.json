@@ -9,11 +9,25 @@
     "watch:css": "tailwindcss -i ./src/styles/tailwind.css -o ./src/styles/output.css --watch"
   },
   "dependencies": {
-    "serve": "^14.2.1"
+    "@headlessui/react": "^2.2.1",
+    "@types/js-cookie": "^3.0.6",
+    "@types/node": "^22.14.1",
+    "@types/react": "^19.1.1",
+    "@types/react-beautiful-dnd": "^13.1.8",
+    "@types/react-dom": "^19.1.2",
+    "framer-motion": "^12.6.5",
+    "js-cookie": "^3.0.5",
+    "next": "^15.3.0",
+    "react": "^19.1.0",
+    "react-beautiful-dnd": "^13.1.1",
+    "react-dom": "^19.1.0",
+    "react-hot-toast": "^2.5.2",
+    "serve": "^14.2.1",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
-    "tailwindcss": "^3.4.1",
+    "autoprefixer": "^10.4.19",
     "postcss": "^8.4.35",
-    "autoprefixer": "^10.4.19"
+    "tailwindcss": "^3.4.1"
   }
 }

@@ -147,8 +147,9 @@ html,
 :host {
   line-height: 1.5;
   /* 1 */
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;    /* For IE */
+  -webkit-text-size-adjust: 100%; /* For Safari */
+  text-size-adjust: 100%;       /* For modern browsers */
   /* 2 */
   -moz-tab-size: 4;
   /* 3 */
@@ -349,6 +350,7 @@ input:where([type='button']),
 input:where([type='reset']),
 input:where([type='submit']) {
   -webkit-appearance: button;
+  appearance: button;
   /* 1 */
   background-color: transparent;
   /* 2 */
@@ -396,6 +398,7 @@ Correct the cursor style of increment and decrement buttons in Safari.
 
 [type='search'] {
   -webkit-appearance: textfield;
+  appearance: textfield;
   /* 1 */
   outline-offset: -2px;
   /* 2 */
@@ -535,8 +538,6 @@ embed,
 object {
   display: block;
   /* 1 */
-  vertical-align: middle;
-  /* 2 */
 }
 
 /*
