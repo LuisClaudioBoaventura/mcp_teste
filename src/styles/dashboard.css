@@ -1,3 +1,4 @@
+/* Base styles */
 .sidebar {
     transition: width 0.3s ease;
 }
@@ -20,6 +21,8 @@
 .menu-icon {
     transition: all 0.2s ease;
 }
+
+/* Toggle switch styles */
 .toggle-switch {
     position: relative;
     display: inline-block;
@@ -53,20 +56,29 @@
     transition: .4s;
     border-radius: 50%;
 }
-input:checked + .slider {
-    background-color: #9333ea;
+
+/* Modern forced colors mode support */
+@media (forced-colors: active) {
+    .toggle-switch input:checked + .slider {
+        background-color: SelectedItem;
+    }
+    .slider:before {
+        background-color: Canvas;
+    }
+    .slider {
+        border: 1px solid ButtonText;
+    }
 }
-input:checked + .slider:before {
-    transform: translateX(24px);
-}
-/* Dark mode overrides */
+
+/* Dark mode styles */
 .dark .toggle-switch input:checked + .slider {
     background-color: #ab4dff;
 }
 .dark .slider {
     background-color: #4b5563;
 }
-/* Responsive */
+
+/* Responsive styles */
 @media (max-width: 768px) {
     .sidebar {
         width: 80px;
@@ -80,4 +92,4 @@ input:checked + .slider:before {
     .content {
         margin-left: 80px;
     }
-} 
+}

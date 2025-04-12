@@ -4,9 +4,16 @@
   "description": "Página de login elegante com efeitos visuais modernos",
   "main": "index.js",
   "scripts": {
-    "start": "serve src"
+    "start": "serve src",
+    "build:css": "tailwindcss -i ./src/styles/tailwind.css -o ./src/styles/output.css",
+    "watch:css": "tailwindcss -i ./src/styles/tailwind.css -o ./src/styles/output.css --watch"
   },
   "dependencies": {
     "serve": "^14.2.1"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1",
+    "postcss": "^8.4.35",
+    "autoprefixer": "^10.4.19"
   }
-} 
+}

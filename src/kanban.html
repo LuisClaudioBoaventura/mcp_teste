@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Kanban Task Manager</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles/output.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles/dashboard.css">
     <script>
@@ -208,7 +209,7 @@
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Nova Tarefa</h3>
-                    <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                    <button id="closeModalBtn" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300" title="Fechar Modal">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -235,7 +236,7 @@
                     
                     <div class="mb-4">
                         <label class="flex items-center">
-                            <input type="checkbox" id="enableTimer" class="rounded text-lilac-600 focus:ring-lilac-500 dark:bg-gray-700">
+                            <input type="checkbox" id="enableTimer" class="rounded text-lilac-600 focus:ring-lilac-500 dark:bg-gray-700" title="Habilitar Timer" placeholder="Selecione para habilitar o timer" aria-label="Habilitar Timer">
                             <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Adicionar timer</span>
                         </label>
                     </div>
@@ -245,15 +246,15 @@
                         <div class="flex space-x-2">
                             <div class="flex-1">
                                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Horas</label>
-                                <input type="number" id="hours" min="0" max="24" value="0" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-300">
+                                <input type="number" id="hours" min="0" max="24" value="0" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-300" title="Horas" placeholder="Digite as horas">
                             </div>
                             <div class="flex-1">
                                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Minutos</label>
-                                <input type="number" id="minutes" min="0" max="59" value="30" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-300">
+                                <input type="number" id="minutes" min="0" max="59" value="30" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-300" title="Minutos" placeholder="Digite os minutos">
                             </div>
                             <div class="flex-1">
                                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Segundos</label>
-                                <input type="number" id="seconds" min="0" max="59" value="0" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-300">
+                                <input type="number" id="seconds" min="0" max="59" value="0" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-300" title="Segundos" placeholder="Digite os segundos">
                             </div>
                         </div>
                     </div>
@@ -273,7 +274,7 @@
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h3 id="detailTitle" class="text-xl font-semibold text-gray-800 dark:text-gray-200"></h3>
-                    <button id="closeDetailModalBtn" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                    <button id="closeDetailModalBtn" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300" title="Fechar Detalhes da Tarefa">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -324,319 +325,6 @@
         </div>
     </div>
 
-    <script>
-        // DOM Elements
-        const createTaskBtn = document.getElementById('createTaskBtn');
-        const taskModal = document.getElementById('taskModal');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const cancelTaskBtn = document.getElementById('cancelTaskBtn');
-        const taskForm = document.getElementById('taskForm');
-        const enableTimer = document.getElementById('enableTimer');
-        const timerSection = document.getElementById('timerSection');
-        const taskDetailModal = document.getElementById('taskDetailModal');
-        const closeDetailModalBtn = document.getElementById('closeDetailModalBtn');
-        
-        // Task columns
-        const todoTasks = document.getElementById('todo-tasks');
-        const progressTasks = document.getElementById('progress-tasks');
-        const doneTasks = document.getElementById('done-tasks');
-        
-        // Count elements
-        const todoCount = document.getElementById('todo-count');
-        const progressCount = document.getElementById('progress-count');
-        const doneCount = document.getElementById('done-count');
-        
-        // Timer variables
-        let timerInterval;
-        let currentTaskId = null;
-        let timerRunning = false;
-        let remainingTime = 0;
-        
-        // Sample tasks (would normally come from a database)
-        let tasks = [];
-        
-        // Initialize the board
-        function initBoard() {
-            renderTasks();
-            updateCounts();
-        }
-        
-        // Render all tasks
-        function renderTasks() {
-            // Clear all columns
-            todoTasks.innerHTML = '';
-            progressTasks.innerHTML = '';
-            doneTasks.innerHTML = '';
-            
-            // Render each task in the appropriate column
-            tasks.forEach(task => {
-                const taskElement = createTaskElement(task);
-                
-                switch(task.status) {
-                    case 'todo':
-                        todoTasks.appendChild(taskElement);
-                        break;
-                    case 'progress':
-                        progressTasks.appendChild(taskElement);
-                        break;
-                    case 'done':
-                        doneTasks.appendChild(taskElement);
-                        break;
-                }
-            });
-        }
-        
-        // Create a task card element
-        function createTaskElement(task) {
-            const priorityClasses = {
-                low: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
-                medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
-                high: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-            };
-            
-            const taskElement = document.createElement('div');
-            taskElement.className = 'task-card bg-white dark:bg-gray-800 p-4 rounded-lg shadow cursor-pointer';
-            taskElement.dataset.id = task.id;
-            
-            taskElement.innerHTML = `
-                <div class="flex justify-between items-start">
-                    <h3 class="font-medium text-gray-800 dark:text-gray-200">${task.title}</h3>
-                    <span class="text-xs px-2 py-1 rounded-full ${priorityClasses[task.priority]}">${getPriorityText(task.priority)}</span>
-                </div>
-                ${task.description ? `<p class="text-sm text-gray-600 dark:text-gray-400 mt-2">${task.description.substring(0, 60)}${task.description.length > 60 ? '...' : ''}</p>` : ''}
-                ${task.timer?.enabled ? `<div class="mt-3 flex items-center text-xs text-gray-500 dark:text-gray-400">
-                    <i class="fas fa-clock mr-1"></i>
-                    <span>${formatTime(task.timer.hours)}:${formatTime(task.timer.minutes)}:${formatTime(task.timer.seconds)}</span>
-                </div>` : ''}
-            `;
-            
-            taskElement.addEventListener('click', () => openTaskDetail(task.id));
-            
-            return taskElement;
-        }
-        
-        // Format time to two digits
-        function formatTime(time) {
-            return time < 10 ? `0${time}` : time;
-        }
-        
-        // Get priority text
-        function getPriorityText(priority) {
-            const priorityText = {
-                low: 'Baixa',
-                medium: 'Média',
-                high: 'Alta'
-            };
-            return priorityText[priority];
-        }
-        
-        // Update task counts
-        function updateCounts() {
-            const todo = tasks.filter(task => task.status === 'todo').length;
-            const progress = tasks.filter(task => task.status === 'progress').length;
-            const done = tasks.filter(task => task.status === 'done').length;
-            
-            todoCount.textContent = todo;
-            progressCount.textContent = progress;
-            doneCount.textContent = done;
-        }
-        
-        // Open create task modal
-        createTaskBtn.addEventListener('click', () => {
-            taskModal.classList.remove('hidden');
-        });
-        
-        // Close modals
-        function closeModals() {
-            taskModal.classList.add('hidden');
-            taskDetailModal.classList.add('hidden');
-            taskForm.reset();
-            timerSection.classList.add('hidden');
-            enableTimer.checked = false;
-        }
-        
-        // Close modal buttons
-        closeModalBtn.addEventListener('click', closeModals);
-        cancelTaskBtn.addEventListener('click', closeModals);
-        closeDetailModalBtn.addEventListener('click', closeModals);
-        
-        // Toggle timer section
-        enableTimer.addEventListener('change', () => {
-            if (enableTimer.checked) {
-                timerSection.classList.remove('hidden');
-            } else {
-                timerSection.classList.add('hidden');
-            }
-        });
-        
-        // Handle form submission
-        taskForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const title = document.getElementById('taskTitle').value;
-            const description = document.getElementById('taskDescription').value;
-            const priority = document.getElementById('taskPriority').value;
-            const timerEnabled = enableTimer.checked;
-            
-            const newTask = {
-                id: Date.now(), // Simple unique ID
-                title,
-                description,
-                priority,
-                status: 'todo',
-                timer: {
-                    enabled: timerEnabled
-                }
-            };
-            
-            if (timerEnabled) {
-                const hours = parseInt(document.getElementById('hours').value) || 0;
-                const minutes = parseInt(document.getElementById('minutes').value) || 0;
-                const seconds = parseInt(document.getElementById('seconds').value) || 0;
-                
-                newTask.timer.hours = hours;
-                newTask.timer.minutes = minutes;
-                newTask.timer.seconds = seconds;
-                newTask.timer.remaining = (hours * 3600) + (minutes * 60) + seconds;
-            }
-            
-            tasks.push(newTask);
-            renderTasks();
-            updateCounts();
-            closeModals();
-        });
-        
-        // Open task detail modal
-        function openTaskDetail(taskId) {
-            const task = tasks.find(t => t.id == taskId);
-            if (!task) return;
-            
-            currentTaskId = taskId;
-            
-            document.getElementById('detailTitle').textContent = task.title;
-            document.getElementById('detailDescription').textContent = task.description || 'Sem descrição';
-            
-            const priorityElement = document.getElementById('detailPriority');
-            priorityElement.textContent = getPriorityText(task.priority);
-            priorityElement.className = 'inline-block px-2 py-1 text-xs font-medium rounded-full ' + 
-                (task.priority === 'low' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 
-                 task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300' : 
-                 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300');
-            
-            const timerDisplaySection = document.getElementById('timerDisplaySection');
-            if (task.timer?.enabled) {
-                timerDisplaySection.classList.remove('hidden');
-                remainingTime = task.timer.remaining;
-                updateTimerDisplay();
-            } else {
-                timerDisplaySection.classList.add('hidden');
-            }
-            
-            taskDetailModal.classList.remove('hidden');
-        }
-        
-        // Timer functions
-        function updateTimerDisplay() {
-            const hours = Math.floor(remainingTime / 3600);
-            const minutes = Math.floor((remainingTime % 3600) / 60);
-            const seconds = remainingTime % 60;
-            
-            document.getElementById('timerDisplay').textContent = 
-                `${formatTime(hours)}:${formatTime(minutes)}:${formatTime(seconds)}`;
-        }
-        
-        function startTimer() {
-            if (timerRunning) return;
-            
-            timerRunning = true;
-            timerInterval = setInterval(() => {
-                if (remainingTime > 0) {
-                    remainingTime--;
-                    updateTimerDisplay();
-                    
-                    // Update the task's remaining time
-                    const taskIndex = tasks.findIndex(t => t.id == currentTaskId);
-                    if (taskIndex !== -1) {
-                        tasks[taskIndex].timer.remaining = remainingTime;
-                    }
-                } else {
-                    clearInterval(timerInterval);
-                    timerRunning = false;
-                    alert('Tempo esgotado!');
-                }
-            }, 1000);
-        }
-        
-        function pauseTimer() {
-            clearInterval(timerInterval);
-            timerRunning = false;
-        }
-        
-        function resetTimer() {
-            pauseTimer();
-            const task = tasks.find(t => t.id == currentTaskId);
-            if (task && task.timer?.enabled) {
-                remainingTime = (task.timer.hours * 3600) + (task.timer.minutes * 60) + task.timer.seconds;
-                task.timer.remaining = remainingTime;
-                updateTimerDisplay();
-            }
-        }
-        
-        // Timer buttons
-        document.getElementById('startTimerBtn').addEventListener('click', startTimer);
-        document.getElementById('pauseTimerBtn').addEventListener('click', pauseTimer);
-        document.getElementById('resetTimerBtn').addEventListener('click', resetTimer);
-        
-        // Task movement buttons
-        function moveTaskToStatus(status) {
-            const taskIndex = tasks.findIndex(t => t.id == currentTaskId);
-            if (taskIndex !== -1) {
-                tasks[taskIndex].status = status;
-                renderTasks();
-                updateCounts();
-                closeModals();
-            }
-        }
-        
-        document.getElementById('moveToTodoBtn').addEventListener('click', () => moveTaskToStatus('todo'));
-        document.getElementById('moveToProgressBtn').addEventListener('click', () => moveTaskToStatus('progress'));
-        document.getElementById('moveToDoneBtn').addEventListener('click', () => moveTaskToStatus('done'));
-        
-        // Delete task
-        document.getElementById('deleteTaskBtn').addEventListener('click', () => {
-            if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
-                tasks = tasks.filter(t => t.id != currentTaskId);
-                renderTasks();
-                updateCounts();
-                closeModals();
-            }
-        });
-
-        // Dark mode toggle
-        const darkModeToggle = document.getElementById('darkModeToggle');
-        const html = document.documentElement;
-
-        darkModeToggle.addEventListener('change', () => {
-            if (darkModeToggle.checked) {
-                html.classList.remove('light');
-                html.classList.add('dark');
-                localStorage.setItem('darkMode', 'dark');
-            } else {
-                html.classList.remove('dark');
-                html.classList.add('light');
-                localStorage.setItem('darkMode', 'light');
-            }
-        });
-
-        // Logout function
-        function logout() {
-            localStorage.removeItem('isLoggedIn');
-            window.location.href = 'index.html';
-        }
-        
-        // Initialize the board
-        initBoard();
-    </script>
     <script src="js/theme.js"></script>
     <script src="js/kanban.js"></script>
 </body>
