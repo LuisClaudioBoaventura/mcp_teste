@@ -117,6 +117,32 @@ function getPriorityText(priority) {
     return priorityText[priority];
 }
 
+// Função para obter a classe CSS correspondente à prioridade
+function getPriorityClass(priority) {
+    const priorityClasses = {
+        low: 'bg-green-100 text-green-800',
+        medium: 'bg-yellow-100 text-yellow-800',
+        high: 'bg-red-100 text-red-800'
+    };
+    return priorityClasses[priority] || '';
+}
+
+// Função para abrir os detalhes de uma tarefa
+function openTaskDetail(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+
+    // Preencher os detalhes da tarefa no modal
+    document.getElementById('detailTitle').textContent = task.title;
+    document.getElementById('detailDescription').textContent = task.description || 'Sem descrição';
+    const priorityElement = document.getElementById('detailPriority');
+    priorityElement.textContent = getPriorityText(task.priority);
+    priorityElement.className = `inline-block px-2 py-1 text-xs font-medium rounded-full ${getPriorityClass(task.priority)}`;
+
+    // Exibir o modal de detalhes
+    document.getElementById('taskDetailModal').classList.remove('hidden');
+}
+
 // Update task counts
 function updateCounts() {
     const todo = tasks.filter(task => task.status === 'todo').length;
@@ -128,9 +154,32 @@ function updateCounts() {
     doneCount.textContent = done;
 }
 
-// Open create task modal
+// Consolidar funções de manipulação de modal
+function toggleModal(modal, show) {
+    if (show) {
+        modal.classList.remove('hidden');
+        modal.setAttribute('aria-hidden', 'false');
+    } else {
+        modal.classList.add('hidden');
+        modal.setAttribute('aria-hidden', 'true');
+    }
+}
+
+// Substituir chamadas repetitivas por toggleModal
 createTaskBtn.addEventListener('click', () => {
-    taskModal.classList.remove('hidden');
+    toggleModal(taskModal, true);
+});
+
+closeModalBtn.addEventListener('click', () => {
+    toggleModal(taskModal, false);
+});
+
+cancelTaskBtn.addEventListener('click', () => {
+    toggleModal(taskModal, false);
+});
+
+closeDetailModalBtn.addEventListener('click', () => {
+    toggleModal(taskDetailModal, false);
 });
 
 // Close modals
@@ -142,29 +191,45 @@ function closeModals() {
     enableTimer.checked = false;
 }
 
-// Close modal buttons
-closeModalBtn.addEventListener('click', closeModals);
-cancelTaskBtn.addEventListener('click', closeModals);
-closeDetailModalBtn.addEventListener('click', closeModals);
+// Adicionando logs para verificar se os eventos dos botões do modal estão sendo atribuídos corretamente
+closeModalBtn.addEventListener('click', () => {
+    console.log('Botão de fechar modal clicado');
+    closeModals();
+});
 
-// Toggle timer section
+cancelTaskBtn.addEventListener('click', () => {
+    console.log('Botão de cancelar tarefa clicado');
+    closeModals();
+});
+
+closeDetailModalBtn.addEventListener('click', () => {
+    console.log('Botão de fechar detalhes do modal clicado');
+    closeModals();
+});
+
+// Forçar a exibição do timerSection ao remover a classe 'hidden'
 enableTimer.addEventListener('change', () => {
+    console.log('Checkbox enableTimer mudou:', enableTimer.checked);
     if (enableTimer.checked) {
         timerSection.classList.remove('hidden');
+        timerSection.style.display = 'block'; // Força a exibição
+        console.log('Classe hidden removida de timerSection:', !timerSection.classList.contains('hidden'));
     } else {
         timerSection.classList.add('hidden');
+        timerSection.style.display = 'none'; // Força a ocultação
+        console.log('Classe hidden adicionada a timerSection:', timerSection.classList.contains('hidden'));
     }
 });
 
-// Handle form submission
+// Adicionando logs para verificar os dados do timer ao criar uma tarefa
 taskForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    
+
     const title = document.getElementById('taskTitle').value;
     const description = document.getElementById('taskDescription').value;
     const priority = document.getElementById('taskPriority').value;
     const timerEnabled = enableTimer.checked;
-    
+
     const newTask = {
         id: Date.now(),
         title,
@@ -175,18 +240,22 @@ taskForm.addEventListener('submit', (e) => {
             enabled: timerEnabled
         }
     };
-    
+
     if (timerEnabled) {
         const hours = parseInt(document.getElementById('hours').value) || 0;
         const minutes = parseInt(document.getElementById('minutes').value) || 0;
         const seconds = parseInt(document.getElementById('seconds').value) || 0;
-        
+
         newTask.timer.hours = hours;
         newTask.timer.minutes = minutes;
         newTask.timer.seconds = seconds;
         newTask.timer.remaining = (hours * 3600) + (minutes * 60) + seconds;
+
+        console.log('Timer configurado para a nova tarefa:', newTask.timer);
+    } else {
+        console.log('Timer não habilitado para a nova tarefa.');
     }
-    
+
     tasks.push(newTask);
     saveTasksToStorage(); // Salva após adicionar nova tarefa
     renderTasks();
@@ -217,6 +286,69 @@ document.getElementById('deleteTaskBtn').addEventListener('click', () => {
     }
 });
 
+// Adicionando eventos para os botões do modal de detalhes da tarefa
+const moveToTodoBtn = document.getElementById('moveToTodoBtn');
+const moveToProgressBtn = document.getElementById('moveToProgressBtn');
+const moveToDoneBtn = document.getElementById('moveToDoneBtn');
+const deleteTaskBtn = document.getElementById('deleteTaskBtn');
+
+moveToTodoBtn.addEventListener('click', () => {
+    console.log('Botão "A Fazer" clicado');
+    moveTaskToStatus('todo');
+});
+
+moveToProgressBtn.addEventListener('click', () => {
+    console.log('Botão "Em Progresso" clicado');
+    moveTaskToStatus('progress');
+});
+
+moveToDoneBtn.addEventListener('click', () => {
+    console.log('Botão "Concluir" clicado');
+    moveTaskToStatus('done');
+});
+
+deleteTaskBtn.addEventListener('click', () => {
+    console.log('Botão "Excluir" clicado');
+    if (confirm('Tem certeza que deseja excluir esta tarefa?')) {
+        tasks = tasks.filter(t => t.id != currentTaskId);
+        saveTasksToStorage(); // Salva após deletar a tarefa
+        renderTasks();
+        updateCounts();
+        closeModals();
+    }
+});
+
+// Atualizando a lógica para iniciar o timer e mover o card para "Em Progresso"
+const startTimerBtn = document.getElementById('startTimerBtn');
+startTimerBtn.addEventListener('click', () => {
+    console.log('Botão "Iniciar Timer" clicado');
+    moveTaskToStatus('progress');
+    // Aqui você pode adicionar a lógica para iniciar o timer
+});
+
+// Adicionar eventos para fechar o modal corretamente
+closeModalBtn.addEventListener('click', () => {
+    toggleModal(taskModal, false);
+});
+
+cancelTaskBtn.addEventListener('click', () => {
+    toggleModal(taskModal, false);
+});
+
+closeDetailModalBtn.addEventListener('click', () => {
+    toggleModal(taskDetailModal, false);
+});
+
+// Garantir que o modal seja fechado ao clicar fora dele
+window.addEventListener('click', (event) => {
+    if (event.target === taskModal) {
+        toggleModal(taskModal, false);
+    }
+    if (event.target === taskDetailModal) {
+        toggleModal(taskDetailModal, false);
+    }
+});
+
 // Initialize the board
 initBoard();
 
@@ -229,5 +361,60 @@ function logout() {
 // Dark mode toggle
 const darkModeToggle = document.getElementById('darkModeToggle');
 darkModeToggle.addEventListener('change', () => {
-    themeManager.toggleTheme(darkModeToggle.checked);
+
+
+      themeManager.toggleTheme(darkModeToggle.checked);
 });
+
+// Adicionar controle de sidebar
+const sidebarToggle = document.getElementById('sidebarToggle');
+const sidebar = document.querySelector('.sidebar');
+
+if (sidebarToggle && sidebar) {
+    sidebarToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+    
+      // Opcional: salvar o estado do sidebar no localStorage
+      const isCollapsed = sidebar.classList.contains('collapsed');
+      localStorage.setItem('sidebarCollapsed', isCollapsed);
+    });
+  
+    // Restaurar o estado do sidebar ao carregar a página
+    const savedState = localStorage.getItem('sidebarCollapsed');
+    if (savedState === 'true') {
+      sidebar.classList.add('collapsed');
+    } else if (savedState === 'false') {
+      sidebar.classList.remove('collapsed');
+    }
+}
+
+// Toggle sidebar
+const toggleSidebar = document.getElementById('toggleSidebar');
+const content = document.querySelector('.content');
+
+if (toggleSidebar && sidebar && content) {
+    toggleSidebar.addEventListener('click', function() {
+        sidebar.classList.toggle('collapsed');
+        content.classList.toggle('ml-64');
+        content.classList.toggle('ml-20');
+    });
+
+    // Responsive behavior
+    function handleResize() {
+        if (window.innerWidth < 768) {
+            sidebar.classList.add('collapsed');
+            content.classList.remove('ml-64');
+            content.classList.add('ml-20');
+        } else {
+            sidebar.classList.remove('collapsed');
+            content.classList.add('ml-64');
+            content.classList.remove('ml-20');
+        }
+    }
+
+    // Initial check
+    handleResize();
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+}
