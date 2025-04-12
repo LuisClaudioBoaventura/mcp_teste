@@ -1,24 +1,3 @@
-// Toggle dark mode
-const darkModeToggle = document.getElementById('darkModeToggle');
-const html = document.documentElement;
-
-// Check for saved user preference or use system preference
-if (localStorage.getItem('darkMode') === 'true' || 
-    (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    html.classList.add('dark');
-    darkModeToggle.checked = true;
-}
-
-darkModeToggle.addEventListener('change', function() {
-    if (this.checked) {
-        html.classList.add('dark');
-        localStorage.setItem('darkMode', 'true');
-    } else {
-        html.classList.remove('dark');
-        localStorage.setItem('darkMode', 'false');
-    }
-});
-
 // Toggle sidebar
 const toggleSidebar = document.getElementById('toggleSidebar');
 const sidebar = document.querySelector('.sidebar');
@@ -49,8 +28,14 @@ handleResize();
 // Add event listener
 window.addEventListener('resize', handleResize);
 
+// Dark mode toggle
+const darkModeToggle = document.getElementById('darkModeToggle');
+darkModeToggle.addEventListener('change', function() {
+    themeManager.toggleTheme(this.checked);
+});
+
 // Logout function
 function logout() {
     localStorage.removeItem('isLoggedIn');
     window.location.href = 'index.html';
-} 
+}
