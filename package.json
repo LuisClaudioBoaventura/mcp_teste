@@ -1,0 +1,12 @@
+{
+  "name": "deepsite-login",
+  "version": "1.0.0",
+  "description": "Página de login elegante com efeitos visuais modernos",
+  "main": "index.js",
+  "scripts": {
+    "start": "serve src"
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+} 

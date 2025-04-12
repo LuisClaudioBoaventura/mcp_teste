@@ -1,0 +1,46 @@
+body {
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #2d2d2d 100%);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.glow-effect {
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+}
+
+.input-focus:focus {
+    border-color: #a855f7;
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.3);
+}
+
+.btn-hover:hover {
+    background-color: #9333ea;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -10px rgba(168, 85, 247, 0.6);
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(168, 85, 247, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(168, 85, 247, 0);
+    }
+}
+
+.floating {
+    animation: floating 3s ease-in-out infinite;
+}
+
+@keyframes floating {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+} 
